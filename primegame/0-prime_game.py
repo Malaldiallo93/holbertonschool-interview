@@ -44,25 +44,26 @@ def count_primes_up_to(n, prime_sieve):
     return sum(prime_sieve[:n + 1])  # Sum the primes up to n
 
 
-def is_winner(x, nums):
+def isWinner(x, nums):
     """
     Determine the winner of a prime game played between Maria and Ben.
 
-    The game rules are as follows:
-    - Maria always starts first.
-    - Players take turns choosing a prime number from the set {1, 2, ..., n}.
-    - When a prime is chosen, it and all its multiples are removed.
-    - The player who cannot make a move loses the round.
+    The game follows these rules:
+    - Maria always plays first.
+    - Players take turns picking a prime number and removing it along 
+      with its multiples from the set {1, ..., n}.
+    - The player who cannot make a move loses.
     - The game is played for x rounds with different values of n.
 
     Args:
         x (int): The number of rounds played.
-        nums (list of int): A list of n values for each round.
+        nums (list of int): List of values for n in each round.
 
     Returns:
-        str or None: The name of the player who won the most rounds.
-                     Returns None if there is a tie.
+        str or None: The name of the player who wins the most rounds, 
+                     or None if there's a tie.
     """
+
     if not nums or x < 1:
         return None  # If input is invalid, return None
 
