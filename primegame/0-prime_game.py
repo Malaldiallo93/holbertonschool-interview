@@ -1,5 +1,13 @@
 #!/usr/bin/python3
 
+"""
+Module for Prime Game.
+
+This module contains functions to determine the winner of a game
+where players take turns picking prime numbers and removing them
+and their multiples from a set of consecutive integers.
+"""
+
 def sieve(n):
     """
     Compute all prime numbers up to n using the Sieve of Eratosthenes.
