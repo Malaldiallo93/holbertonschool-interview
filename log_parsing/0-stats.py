@@ -1,54 +1,61 @@
 #!/usr/bin/python3
 """
-    script to log parsing
+    Script for log parsing.
 """
 
 import sys
 import re
 
+# Variables globales pour stocker les statistiques
 total_size = 0
 count_line = 0
-count_status_code = {'200': 0, '301': 0, '400': 0, '401': 0,
-                     '403': 0, '404': 0, '405': 0, '500': 0}
+count_status_code = {
+    '200': 0, '301': 0, '400': 0, '401': 0,
+    '403': 0, '404': 0, '405': 0, '500': 0
+}
 
-# Pattern de la ligne de log
-pattern = (r'^((?:\d{1,3}\.){3}\d{1,3}|[\w.-]+)\s*-\s*\[(.*?)\]'
-           r' "GET /projects/\d+ HTTP/1\.1" (\d+) (\d+)$')
+# Pattern pour capturer les logs valides
+log_pattern = re.compile(
+    r'^((?:\d{1,3}\.){3}\d{1,3}|[\w.-]+)\s*-\s*\[(.*?)\] '
+    r'"GET /projects/\d+ HTTP/1\.1" (\d+) (\d+)$'
+)
+
+def print_stats():
+    """ Affiche les statistiques de logs. """
+    print(f'File size: {total_size}')
+    for code in sorted(count_status_code.keys()):
+        if count_status_code[code] > 0:
+            print(f'{code}: {count_status_code[code]}')
 
 try:
     for line in sys.stdin:
         line = line.strip()
 
-        match = re.match(pattern, line)
-        if not match:
-            continue  # Ignore la ligne si elle ne correspond pas au pattern
+        match = log_pattern.match(line)
+        if match:
+            count_line += 1
 
-        count_line += 1
-        elements = line.split(" ")
+            # Extraire le code de statut et la taille
+            try:
+                status_code = match.group(3)
+                file_size = int(match.group(4))
 
-        # Vérifier que les éléments sont bien des nombres avant de les convertir
-        try:
-            status_code = elements[-2]
-            size = int(elements[-1])
+                # Ajouter la taille au total
+                total_size += file_size
 
-            total_size += size
-            if status_code in count_status_code:
-                count_status_code[status_code] += 1
-        except (ValueError, IndexError):
-            continue  # Ignore si la ligne est mal formée
+                # Incrémenter le compteur de status code
+                if status_code in count_status_code:
+                    count_status_code[status_code] += 1
 
-        # Afficher les stats toutes les 10 lignes
-        if count_line % 10 == 0:
-            print('File size: {}'.format(total_size))
-            for code, count in sorted(count_status_code.items()):
-                if count > 0:
-                    print('{}: {}'.format(code, count))
+            except ValueError:
+                continue  # Ignore les lignes avec une taille invalide
+
+            # Afficher les statistiques toutes les 10 lignes
+            if count_line % 10 == 0:
+                print_stats()
 
 except KeyboardInterrupt:
-    pass  # Permet d'afficher les logs même en cas d'interruption
+    pass  # Permet d'afficher les statistiques même en cas d'interruption
 
 finally:
-    print('File size: {}'.format(total_size))
-    for code, count in sorted(count_status_code.items()):
-        if count > 0:
-            print('{}: {}'.format(code, count))
+    print_stats()  # Afficher les statistiques finales après interruption ou fin de fichier
