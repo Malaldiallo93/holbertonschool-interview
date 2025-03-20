@@ -47,11 +47,13 @@ try:
         parts = line.split()
         if len(parts) >= 7:
             try:
+                # Déclarer les variables globales AVANT de les modifier
+                global total_size, count_line
+                
                 status_code = parts[-2]
                 file_size = int(parts[-1])
 
                 # Update global counters
-                global total_size, count_line
                 total_size += file_size
                 if status_code in status_codes:
                     status_codes[status_code] += 1
