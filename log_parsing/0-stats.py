@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-"""
 
+"""
 Log Parsing Script.
 
 This script reads standard input line by line and processes HTTP logs
@@ -10,21 +10,13 @@ in the following format:
 Features:
 - Computes the total file size.
 - Counts occurrences of HTTP status codes (200, 301, 400, 401, 403, 404, 405, 500).
-- Prints statistics every 10 lines.
-- Handles keyboard interruption (CTRL+C) gracefully by displaying the final stats.
-
-Usage:
-    ./0-generator.py | ./0-stats.py
-
-Output format:
-    File size: <total_size>
-    <status_code>: <count>
-
-Status codes are displayed in ascending order if present.
+- Prints statistics every 10 lines or on keyboard interruption (CTRL+C).
 """
 
 import sys
+import signal
 
+# Global variables
 total_size = 0
 count_line = 0
 status_codes = {
@@ -41,6 +33,15 @@ def print_stats():
             print("{}: {}".format(code, status_codes[code]))
 
 
+def signal_handler(sig, frame):
+    """Handles keyboard interruption (CTRL+C) by printing stats before exiting."""
+    print_stats()
+    sys.exit(0)
+
+
+# Attach the signal handler to SIGINT (CTRL+C)
+signal.signal(signal.SIGINT, signal_handler)
+
 try:
     for line in sys.stdin:
         parts = line.split()
@@ -49,6 +50,8 @@ try:
                 status_code = parts[-2]
                 file_size = int(parts[-1])
 
+                # Update global counters
+                global total_size, count_line
                 total_size += file_size
                 if status_code in status_codes:
                     status_codes[status_code] += 1
@@ -59,9 +62,8 @@ try:
             except ValueError:
                 continue
 
-except KeyboardInterrupt:
-    print_stats()
-    raise
+except EOFError:
+    pass  # Handle end of input gracefully
 
 finally:
     print_stats()
