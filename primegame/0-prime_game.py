@@ -8,6 +8,7 @@ where players take turns picking prime numbers and removing them
 and their multiples from a set of consecutive integers.
 """
 
+
 def sieve(n):
     """
     Compute all prime numbers up to n using the Sieve of Eratosthenes.
@@ -50,7 +51,7 @@ def isWinner(x, nums):
 
     The game follows these rules:
     - Maria always plays first.
-    - Players take turns picking a prime number and removing it along 
+    - Players take turns picking a prime number and removing it along
       with its multiples from the set {1, ..., n}.
     - The player who cannot make a move loses.
     - The game is played for x rounds with different values of n.
@@ -60,7 +61,7 @@ def isWinner(x, nums):
         nums (list of int): List of values for n in each round.
 
     Returns:
-        str or None: The name of the player who wins the most rounds, 
+        str or None: The name of the player who wins the most rounds,
                      or None if there's a tie.
     """
 
