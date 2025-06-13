@@ -1,61 +1,57 @@
 #!/usr/bin/python3
 """
-    Script for log parsing.
+Script that reads stdin line by line and computes metrics.
 """
 
-import sys
-import re
+if __name__ == '__main__':
 
-# Variables globales pour stocker les statistiques
-total_size = 0
-count_line = 0
-count_status_code = {
-    '200': 0, '301': 0, '400': 0, '401': 0,
-    '403': 0, '404': 0, '405': 0, '500': 0
-}
+    import sys
 
-# Pattern pour capturer les logs valides
-log_pattern = re.compile(
-    r'^((?:\d{1,3}\.){3}\d{1,3}|[\w.-]+)\s*-\s*\[(.*?)\] '
-    r'"GET /projects/\d+ HTTP/1\.1" (\d+) (\d+)$'
-)
+    def print_results(statusCodes, fileSize):
+        """
+        Print accumulated statistics.
+        """
+        print(f"File size: {fileSize}")
+        for statusCode, times in sorted(statusCodes.items()):
+            if times:
+                print(f"{statusCode}: {times}")
 
-def print_stats():
-    """ Affiche les statistiques de logs. """
-    print(f'File size: {total_size}')
-    for code in sorted(count_status_code.keys()):
-        if count_status_code[code] > 0:
-            print(f'{code}: {count_status_code[code]}')
+    # Initialize dictionary to store counts of status codes
+    statusCodes = {
+        "200": 0,
+        "301": 0,
+        "400": 0,
+        "401": 0,
+        "403": 0,
+        "404": 0,
+        "405": 0,
+        "500": 0
+    }
+    # Initialize total file size and line counter
+    fileSize = 0
+    n_lines = 0
 
-try:
-    for line in sys.stdin:
-        line = line.strip()
-
-        match = log_pattern.match(line)
-        if match:
-            count_line += 1
-
-            # Extraire le code de statut et la taille
-            try:
-                status_code = match.group(3)
-                file_size = int(match.group(4))
-
-                # Ajouter la taille au total
-                total_size += file_size
-
-                # Incrémenter le compteur de status code
-                if status_code in count_status_code:
-                    count_status_code[status_code] += 1
-
-            except ValueError:
-                continue  # Ignore les lignes avec une taille invalide
-
-            # Afficher les statistiques toutes les 10 lignes
-            if count_line % 10 == 0:
-                print_stats()
-
-except KeyboardInterrupt:
-    pass  # Permet d'afficher les statistiques même en cas d'interruption
-
-finally:
-    print_stats()  # Afficher les statistiques finales après interruption ou fin de fichier
+    try:
+        # Read stdin line by line
+        for line in sys.stdin:
+            # Print statistics after every 10 lines
+            if n_lines != 0 and n_lines % 10 == 0:
+                print_results(statusCodes, fileSize)
+            n_lines += 1
+            data = line.split()
+            if len(data) >= 2:
+                try:
+                    # Parse and compute metrics
+                    statusCode = data[-2]
+                    if statusCode in statusCodes:
+                        statusCodes[statusCode] += 1
+                    fileSize += int(data[-1])
+                except (IndexError, ValueError):
+                    # Skip lines with invalid formats
+                    continue
+        # Print final statistics at EOF
+        print_results(statusCodes, fileSize)
+    except KeyboardInterrupt:
+        # Print statistics on keyboard interruption (Ctrl+C)
+        print_results(statusCodes, fileSize)
+        raise
