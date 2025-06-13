@@ -1,7 +1,7 @@
 #include "sandpiles.h"
 
 /**
- * sandpiles_sum - Computes and prints the sum of two sandpiles
+ * sandpiles_sum - Computes and prints the sum of two
  * @grid1 : the first grid (3 by 3 array of ints)
  * @grid2 : the second grid (3 by 3 array of ints)
  *
@@ -35,7 +35,7 @@ void sandpiles_sum(int grid1[3][3], int grid2[3][3])
 }
 
 /**
- * collapse_sandpile - Collapses grid1 sandpile in 4 directions on grid2
+ * collapse_sandpile - Collapses grid1 sandpile in 4
  * @grid1 : the first grid (3 by 3 array of ints)
  * @grid2 : the second grid (3 by 3 array of ints)
  * @i : the line index of this sandpile
@@ -58,7 +58,7 @@ void collapse_sandpile(int grid1[3][3], int grid2[3][3], int i, int j)
 }
 
 /**
- * add_piles - Computes the sum of two 3 by 3 int arrays into grid1
+ * add_piles - Computes the sum of two 3 by 3 int arrays
  * @grid1 : the first grid (3 by 3 array of ints)
  * @grid2 : the second grid (3 by 3 array of ints)
  *
@@ -103,7 +103,7 @@ void _print_grid(int grid[3][3])
 }
 
 /**
- * check_instability - Check stability of a 3x3 grid
+ * check_instability - Check stability of a 3x3
  * @grid: 3x3 grid
  *
  * Return: 0 if stable, 1 if unstable
