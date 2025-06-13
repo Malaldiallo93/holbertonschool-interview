@@ -2,53 +2,58 @@
 #include <stdlib.h>
 
 /**
- * heapify_up - Restores the Max Heap property by bubbling up the node
- * @node: The node to heapify
- * Return: The final position of the node
+ * heapify_up - Maintains the max-heap property by swapping with parents
+ * @node: Pointer to the inserted node
+ *
+ * Return: Final position of the node after heapifying
  */
 heap_t *heapify_up(heap_t *node)
 {
-	int temp;
+	int tmp;
 
 	while (node->parent && node->n > node->parent->n)
 	{
-		temp = node->n;
+		tmp = node->n;
 		node->n = node->parent->n;
-		node->parent->n = temp;
+		node->parent->n = tmp;
 		node = node->parent;
 	}
+
 	return (node);
 }
 
 /**
- * find_insert_parent - Finds the parent node where the new node should be inserted
- * @root: The root of the heap
- * Return: Pointer to the parent node
+ * find_insert_parent - Finds the first available parent node in level order
+ * @root: Pointer to the root of the heap
+ *
+ * Return: Pointer to the parent node where the new node should be inserted
  */
 heap_t *find_insert_parent(heap_t *root)
 {
-	heap_t *queue[1024];  /* Simple BFS queue, assuming < 1024 nodes */
+	heap_t *queue[1024];
 	int front = 0, rear = 0;
 
 	queue[rear++] = root;
 
 	while (front < rear)
 	{
-		heap_t *current = queue[front++];
+		heap_t *curr = queue[front++];
 
-		if (!current->left || !current->right)
-			return (current);
+		if (!curr->left || !curr->right)
+			return (curr);
 
-		queue[rear++] = current->left;
-		queue[rear++] = current->right;
+		queue[rear++] = curr->left;
+		queue[rear++] = curr->right;
 	}
+
 	return (NULL);
 }
 
 /**
  * heap_insert - Inserts a value into a Max Binary Heap
- * @root: Double pointer to the root node of the heap
- * @value: The value to insert
+ * @root: Double pointer to the root of the heap
+ * @value: Value to insert
+ *
  * Return: Pointer to the inserted node or NULL on failure
  */
 heap_t *heap_insert(heap_t **root, int value)
